@@ -1,0 +1,85 @@
+# main 브랜치에 푸시하면 카페24(FTP)로 자동 배포
+#
+# GitHub 저장소 > Settings > Secrets and variables > Actions 에 아래 secret 을 등록하세요.
+#   FTP_HOST       예) booktreeedu.cafe24.com  (호스팅 정보의 FTP 주소)
+#   FTP_USERNAME   카페24 FTP 아이디
+#   FTP_PASSWORD   카페24 FTP 비밀번호
+#   FTP_SERVER_DIR 서버 폴더 (보통 /www/ ) - 끝에 / 필수
+#
+# 서버에 직접 만들어 두는 것(배포가 건드리지 않음): .env, public/uploads/videos/ 의 영상, writable/ 의 로그·세션
+name: Deploy to cafe24 (FTP)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: intl, mbstring, mysqli
+          tools: composer:v2
+
+      - name: Install production dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+
+      - name: Prepare server-only files
+        run: |
+          # 패키지 폴더는 어떤 경우에도 주소로 열리지 않게 (이중 안전장치)
+          printf '<IfModule authz_core_module>\n\tRequire all denied\n</IfModule>\n<IfModule !authz_core_module>\n\tOrder allow,deny\n\tDeny from all\n</IfModule>\n' > vendor/.htaccess
+          # 업로드 폴더 뼈대
+          mkdir -p public/uploads/videos
+          # 로컬 개발 전용 파일 제거
+          rm -f public/router.php
+
+      - name: FTP deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          protocol: ftp
+          port: 21
+          local-dir: ./
+          state-name: .ftp-deploy-sync-state.json
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            .claude/**
+            tests/**
+            deploy/**
+            legacy_ci3/**
+            .env
+            env
+            env.production.example
+            composer.json
+            composer.lock
+            phpunit.dist.xml
+            builds
+            spark
+            preload.php
+            README.md
+            LICENSE
+            public/uploads/videos/**
+            writable/cache/**
+            writable/logs/*.log
+            writable/session/**
+            writable/debugbar/**
+            writable/uploads/**

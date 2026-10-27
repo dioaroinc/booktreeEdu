@@ -39,18 +39,15 @@ php spark serve --port 8080
 Laragon Apache 로 띄울 때는 `C:/laragon/www/booktreeEdu/public` 을 DocumentRoot 로 잡으면 됩니다
 (Laragon 은 `public` 폴더를 자동 인식해 `booktreeedu.test` 가상호스트를 만듭니다).
 
-## 운영 서버(카페24 등) 배포
+## 운영 서버(카페24) 배포
 
-1. 전체 파일 업로드 후 `env.production.example` 을 `.env` 로 복사하고 값 수정
-   - `app.baseURL` = 실제 도메인
-   - `database.default.*` = 운영 DB
-   - `booktree.remoteAuth = true` 로 두면 책나무 본사 `user` 테이블 계정으로도 로그인 가능
-     (로컬 `users` 에 없는 계정은 본사 DB 에서 확인 후 자동 등록)
-2. 서버에서 `php spark migrate` 실행 (SSH 가 없으면 로컬에서 만든 테이블을 덤프해 올리세요)
-3. DocumentRoot 를 `public/` 으로 설정. 설정할 수 없는 공유 호스팅이면 **루트의 `.htaccess` 가 `public/` 으로 자동 리라이트**합니다.
-4. `writable/`, `public/uploads/videos/` 쓰기 권한 부여
-5. 영상 업로드 용량: php.ini 의 `upload_max_filesize`, `post_max_size` (예: 2G) 와 `max_execution_time` 을 늘리세요.
-   용량이 큰 강의는 유튜브(미등록)에 올리고 주소를 입력하는 방식을 권장합니다.
+`main` 브랜치에 푸시하면 GitHub Actions 가 **FTP 로 자동 배포**합니다 (`.github/workflows/deploy.yml`).
+GitHub 저장소 secret 등록, 서버 첫 설정(PHP 8.2+, DB 가져오기, `.env`, 폴더 권한), 확인 방법은
+**[deploy/README_배포.md](deploy/README_배포.md)** 를 보세요.
+
+- DB 초기 스키마 + 데모 데이터: `deploy/booktreeedu.sql` (phpMyAdmin 으로 가져오기)
+- 서버 `.env` 견본: `env.production.example`
+- 루트의 `.htaccess` 와 `index.php` 는 카페24처럼 `/www` 가 프로젝트 루트일 때 `public/` 만 공개되게 하는 파일입니다.
 
 ## 영상 등록 방식 (관리자 > 교육과정 > 강의 등록)
 

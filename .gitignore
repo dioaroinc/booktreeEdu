@@ -130,3 +130,4 @@ _modules/*
 #-------------------------
 public/uploads/videos/*
 !public/uploads/videos/.gitkeep
+.ftp-deploy-sync-state.json

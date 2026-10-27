@@ -1,0 +1,118 @@
+::-webkit-scrollbar {display: none;}
+
+
+
+a {text-decoration: none;}
+img {border: 0px; padding: 0px; margin: 0px}
+body {font-size: 12px; margin: 0px; font-family: 'Noto Sans KR', sans-serif; background-color: white}
+.body_green {min-height: 100vh; font-size: 14px; margin: 0px; font-family: 'Noto Sans KR', sans-serif; background-image: linear-gradient(to bottom, #136a43 10%, #09472b); background-size: cover; background-repeat: no-repeat;}
+
+.d_green {color: #09472b}
+.n_green {color: #136a43}
+
+.wrap {width: 1024px; margin: 0px auto}
+.clear {clear: both}
+.no_dis {display: none}
+.bg_bk {display: none; position: fixed; z-index: 1; top: 0px; left: 0px; width: 100%; height: 100vh; background-image: url('/garage/images/op70.png'); overflow: hidden;}
+
+.popup_type_1 {position: relative; width: 500px; height: 500px; background-color: white; border-radius: 10px; box-shadow: 0px 0px 10px black; margin: calc(50vh - 300px) auto;}
+.popup_title {height: 40px; line-height: 40px; padding: 0px 15px; color: white; background-color: #ce122d; text-align: center; border-top-left-radius: 10px; border-top-right-radius: 10px; font-size: 14px;}
+.popup_inner {padding: 15px}
+.popup_bt_cancel {position: absolute; width: 100px; height: 40px; line-height: 40px; background-color: gray; border-radius: 10px; color: white; text-align: center; bottom: 10px; left: 10px; font-size: 14px; cursor: pointer;}
+.popup_bt_confirm {position: absolute; width: 100px; height: 40px; line-height: 40px; background-color: #ce122d; border-radius: 10px; color: white; text-align: center; bottom: 10px; right: 10px; font-size: 14px; cursor: pointer;}
+
+
+/* login  */
+.login_form {width: 320px; height: 500px; margin: calc(50vh - 300px) auto; padding: 30px 0px; background-color: #09472b; border-radius: 20px; text-align: center; border: 1px solid #074228;}
+.login_logo {width: 300px; height: 60px; background-image: url('/garage/images/new_white_logo.png'); background-position: center; background-repeat: no-repeat; background-size: contain; margin: 0px auto; cursor: pointer;}
+.login_title {font-size: 12px; line-height: 20px; margin: 25px 0px 20px 0px; color: white;}
+.login_txt {width: 250px; margin: 20px auto 10px auto; font-size: 12px; color: white; text-align: left;}
+.login_ipt {width: 218px; height: 44px; padding: 0px 15px; line-height: 36px; border: 1px solid #efefef; border-radius: 7px; background-color: #f7f7f7; font-size: 14px;}
+.login_bt {width: 250px; height: 44px; line-height: 44px; font-size: 16px; background-color: #136a43; text-align: center; color: white; margin: 30px auto; border-radius: 5px; cursor: pointer;}
+.login_pass {width: 250px; margin: 20px auto 10px auto; font-size: 11px; color: white; text-align: right;}
+div.login_pass a {color: white; text-decoration: underline;}
+.login_footer {width: 500px; color: white; font-size: 13px; line-height: 24px; margin: -50px auto 0px auto; text-align: center;}
+.login_info {margin: 20px 0px 0px 0px; font-size: 11px; color: white; text-align: center;}
+div.login_info span {text-decoration: underline;}
+
+
+/* layout */
+.upper {width: 1024px; padding: 0px calc(50% - 512px); height: 32px; line-height: 32px; border-bottom: 1px solid #dfdfdf; text-align: right; background-color: #f2f2f2}
+div.upper a {color: gray; text-decoration: none}
+.header {width: 1024px; padding: 30px 0px 0px 0px; margin: 0px auto; height: 50px}
+
+.sidebar {width: 1024px; height: 44px; line-height: 44px; background-color: #136a43; padding: 0px calc(50% - 512px); margin: 20px 0px 0px 0px; font-size: 16px; border-top: 2px solid #09472b; ; border-bottom: 1px solid #09472b}
+.rarea {float: right; width: calc(100% - 260px); min-height: 100vh; position: relative; padding: 30px; background-color: white}
+.footer {width: 100%; height: 100px; background-color: #f7f7f7; border-top: 1px solid #efefef; margin: 200px 0px 0px 0px;}
+
+
+.header_logo {float: left; width: 150px; height: 50px; border-radius: 5px; margin: 0px 0px; background-color: white; background-image: url('/garage/images/print_logo.png'); background-size: contain; background-position: center; background-repeat: no-repeat;}
+.header_hello {float: right; height: 20px; margin: 30px 0px 0px 0px;}
+div.header_hello span {color: #09472b; font-weight: bold}
+div.header_hello a {color: gray; font-size: 11px}
+
+.header_title {float: left; font-size: 18px; font-weight: bold; margin: 20px 20px 0px 10px; color: #333}
+
+.sidebar_m {float: left; padding: 0px 20px; height: 44px; line-height: 44px; cursor: pointer; color: white;}
+.sidebar_m:hover {background-color: #09472b}
+.sidebar_m_s {float: left; padding: 0px 20px; height: 44px; line-height: 44px; cursor: pointer; background-color: #09472b; color: white}
+.sidebar_n {float: right; padding: 0px 20px; height: 44px; line-height: 44px; cursor: pointer; color: white; margin: 0px 1px; color: #d6f7e9; font-size: 14px;}
+
+.banner {width: 1024px; height: 460px; padding: 0px calc(50% - 512px); background-size: contain; background-position: center; background-repeat: no-repeat;}
+
+
+.lecture_title {font-size: 30px; margin: 40px 0px 20px 0px; font-weight: bold;}
+.lecture_info {position: relative; padding: 10px 20px; border: 3px solid #136a43; border-radius: 15px; font-size: 16px; box-shadow: 0px 0px 5px #136a43;}
+div.lecture_info span {font-size: 18px; font-weight: bold; color: green;}
+.lecture_info_score {position: absolute; top: -50px; right: 10px; width: 150px; height: 50px; line-height: 50px; background-color: #136a43; color: white; text-align: center; border-top-left-radius: 10px; border-top-right-radius: 10px; font-size: 20px}
+div.lecture_info_score span {color: rgb(241, 230, 20)}
+
+
+
+/* pagenate */
+.pagena {float: right; position: relative; left: -50%; margin: 10px 0px 0px 0px; font-size: 10px}
+.pagena_m {float: left; position: relative; left: 50%; min-width: 13px; height: 23px; line-height: 23px; padding: 0px 5px; margin: 0px 0px 0px 5px; text-align: center; background: #efefef; border-radius: 3px; color: #333}
+.pagena_m:hover {cursor: pointer; background: #ce122d; color: white;}
+.pagena_m_s {float: left; position: relative; left: 50%; min-width: 13px; height: 23px; line-height: 23px; padding: 0px 5px; margin: 0px 0px 0px 5px; text-align: center; background: #ce122d; border-radius: 3px; color: white}
+div.pagena_m:hover a {color: white}
+div.pagena_m a {color: #333}
+
+.pagena_lite {text-align: center; margin: 70px 0px; font-size: 14px}
+
+  
+  
+
+/* sheet */
+.sheet_t {line-height: 36px; padding: 0px 15px; border-top: 2px solid #ce122d; border-bottom: 1px solid #dfdfdf; background-color: #f2f2f2; font-size: 16px; font-weight: bold; margin: 40px 0px 0px 0px;}
+.sheet_m {height: 50px; line-height: 50px; border: 1px solid #dfdfdf; border-radius: 5px; margin: 20px 0px 0px 0px; padding: 0px}
+.sheet_mt {float: left; width: 120px; background-color: #f7f7f7; color: #ce122d; text-align: center; border-top-left-radius: 5px; border-bottom-left-radius: 5px; font-size: 14px}
+.sheet_mc {float: left; width: calc(100% - 120px); height: 50px; overflow-x: scroll;}
+
+.sheet_mb {float: left; width: 40px; height: 40px; margin: 5px 0px 0px 10px; background-color: #f2f2f2; border-radius: 5px; cursor: pointer;}
+.sheet_mb_add {float: left; width: 40px; height: 40px; margin: 5px 0px 0px 10px; background-color: #ce122d; border-radius: 5px; cursor: pointer; line-height: 40px; text-align: center; font-size: 24px; color: white}
+
+
+
+/* lecture */
+.lecture_c {line-height: 40px; margin: 40px 0px 20px 0px; background-color: #136a43; padding: 0px 15px; font-size: 16px; color: white; border-radius: 20px;}
+.lecture_m {border: 1px solid #c5c5c5; border-radius: 20px; padding: 0px 20px; margin: 0px 0px 20px 0px;}
+.lecture_mt {float: left; width: 60px; line-height: 60px; font-size: 20px; font-weight: bold; color: black; text-align: center;}
+.lecture_mc {float: left; padding: 10px 15px;}
+.lecture_mpass {float: left; padding: 0px 15px; background-color: rgb(15, 136, 202); font-size: 16px; color: white; height: 40px; line-height: 40px; margin: 10px 10px; border-radius: 10px;}
+.lecture_mct {font-size: 16px; line-height: 20px;}
+.lecture_mcb {font-size: 12px; color: green}
+.lecture_mb {float: right; height: 36px; margin: 12px}
+.lecture_mb_bt {float: left; padding: 0px 10px; height: 36px; line-height: 36px; margin: 0px 5px; background-color: #136a43; border-radius: 10px; color: white; cursor: pointer;}
+.lecture_mb_bt2 {float: left; padding: 0px 10px; height: 36px; line-height: 36px; margin: 0px 5px; background-color: black; border-radius: 10px; color: white; cursor: pointer;}
+.lecture_mb_bt3 {float: left; padding: 0px 10px; height: 36px; line-height: 36px; margin: 0px 5px; background-color: #dfdfdf; border-radius: 10px; color: black; cursor: pointer;}
+.lecture_mb_bt4 {float: left; padding: 0px 10px; height: 36px; line-height: 36px; margin: 0px 5px; background-color: rgb(196, 234, 196); border-radius: 10px; color: black; cursor: pointer;}
+.lecture_mb_bt5 {float: left; padding: 0px 10px; height: 36px; line-height: 36px; margin: 0px 5px; background-color: rgb(193, 16, 16); border-radius: 10px; color: white; cursor: pointer;}
+
+
+/* vid */
+.vid_title {height: 40px; line-height: 40px; background-color: #136a43; color: white; font-size: 16px; padding: 0px 15px}
+.vid_title_se {height: 24px; line-height: 24px; background-color: #f2f2f2; color: black; font-size: 12px; padding: 0px 15px; border-bottom: 1px solid #dfdfdf}
+.vid_vid {width: 700px; height: 470px; background-color: #f2f2f2; margin: 20px auto}
+
+.vid_bt_next {float: left; width: 80px; text-align: center; height: 40px; line-height: 40px; background-color: #136a43; color: white; padding: 0px 10px; cursor: pointer; margin: 0px 0px 0px calc(50% - 90px); border-radius: 5px;}
+.vid_bt_close {float: left; width: 60px; text-align: center; height: 40px; line-height: 40px; background-color: #333; color: white; padding: 0px 10px; cursor: pointer; margin: 0px 0px 0px 10px; border-radius: 5px;}

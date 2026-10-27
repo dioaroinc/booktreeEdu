@@ -1,0 +1,5 @@
+# 업로드 폴더: PHP 실행 금지, 영상 파일만 서빙
+<FilesMatch "\.(php|phtml|php3|php4|php5|phar)$">
+    Require all denied
+</FilesMatch>
+Options -Indexes

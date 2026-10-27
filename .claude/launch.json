@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "booktreeEdu",
+      "runtimeExecutable": "C:/laragon/bin/php/php-8.3.33-Win32-vs16-x64/php.exe",
+      "runtimeArgs": ["spark", "serve", "--host", "localhost", "--port", "8080"],
+      "port": 8080
+    }
+  ]
+}

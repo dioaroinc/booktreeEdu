@@ -1,0 +1,12 @@
+# 공유 호스팅(카페24 등)에서 DocumentRoot 를 public/ 으로 바꿀 수 없을 때:
+# 모든 요청을 public/ 으로 넘깁니다. (DocumentRoot 가 이미 public/ 이면 이 파일은 사용되지 않습니다)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# 소스 폴더 직접 접근 차단
+<IfModule mod_rewrite.c>
+    RewriteRule ^(app|writable|vendor|tests|legacy_ci3)/ - [F,L]
+</IfModule>

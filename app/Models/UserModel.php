@@ -39,6 +39,23 @@ class UserModel extends Model
     }
 
     /**
+     * 본사 계정의 관리자 여부 (booktree-order 와 같은 기준)
+     *
+     *  user.level 이 있으면 100=최종관리자, 70=본사직원(교육담당), 71=본사직원(주문담당) 가 관리자.
+     *  level 컬럼이 없거나 비어 있으면(운영 DB 과도기) 예전 기준 type=100(최종관리자) 으로 판단.
+     */
+    public static function isHqAdmin(array $row): bool
+    {
+        $level = $row['level'] ?? null;
+
+        if ($level !== null && $level !== '') {
+            return in_array((int) $level, [100, 70, 71], true);
+        }
+
+        return (int) ($row['type'] ?? 0) === 100;
+    }
+
+    /**
      * 책나무 본사 DB(user 테이블) 계정으로 인증 후 로컬 users 에 동기화
      */
     public function authenticateRemote(string $loginId, string $password): ?array
@@ -51,8 +68,8 @@ class UserModel extends Model
             $remote = \Config\Database::connect('booktree');
             // 아이디 비교는 예전 쿼리와 같이 DB(utf8_general_ci)에 맡기고, 비밀번호는 PHP 에서 검증
             // (본사 user.password 는 "sha256$솔트$해시" 또는 아직 평문 - App\Libraries\PasswordHash)
+            // level 컬럼은 운영 DB 에 아직 없을 수 있어 * 로 읽고 ?? 로 접근한다
             $rows = $remote->table('user')
-                ->select('num, id, password, name, type, status, phone, email')
                 ->where('id', $loginId)
                 ->get()
                 ->getResultArray();
@@ -76,8 +93,9 @@ class UserModel extends Model
             return null;
         }
 
-        if ((int) $row['status'] !== 1) {
-            log_message('info', '책나무 본사 계정 status=' . $row['status'] . ' 로 로그인 거부: ' . $loginId);
+        // 본사 user.status: 4 이상 = 폐점 (booktree-order 의 활성 기준 status < 4 와 동일)
+        if ((int) $row['status'] >= 4) {
+            log_message('info', '책나무 본사 계정 status=' . $row['status'] . '(폐점) 로 로그인 거부: ' . $loginId);
 
             return null;
         }
@@ -89,7 +107,7 @@ class UserModel extends Model
             'branch_name' => $row['name'],
             'phone'       => $row['phone'] ?? null,
             'email'       => $row['email'] ?? null,
-            'type'        => (int) $row['type'] === 100 ? USER_TYPE_ADMIN : USER_TYPE_STUDENT,
+            'type'        => self::isHqAdmin($row) ? USER_TYPE_ADMIN : USER_TYPE_STUDENT,
             'status'      => 1,
             'source'      => 'booktree',
         ];

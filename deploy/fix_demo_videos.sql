@@ -1,0 +1,5 @@
+UPDATE lessons SET video_url='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/friday.mp4' WHERE video_url='https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4';
+UPDATE lessons SET video_url='https://mdn.github.io/learning-area/html/multimedia-and-embedding/video-and-audio-content/rabbit320.mp4' WHERE video_url='https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+UPDATE lessons SET video_url='https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4' WHERE video_url='https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+UPDATE lessons SET video_url='https://samplelib.com/lib/preview/mp4/sample-10s.mp4' WHERE video_url='https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4';
+UPDATE lessons SET video_url='https://download.samplelib.com/mp4/sample-15s.mp4' WHERE video_url='https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4';

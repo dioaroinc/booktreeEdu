@@ -127,12 +127,13 @@
         <div class="demo__text">
             <span class="eyebrow">데모 강의</span>
             <h2>강의와 시험, 이렇게 진행됩니다</h2>
-            <p>데모 계정으로 로그인하면 실제 강의 영상 시청 → 진도 저장 → 확인 시험 → 결과 확인까지 전 과정을 체험할 수 있습니다.</p>
-            <div class="demo__account">
-                <div><span>데모 수강생</span> 아이디 <code>demo</code> / 비밀번호 <code>demo1234</code></div>
-                <div><span>관리자</span> 아이디 <code>admin</code> / 비밀번호 <code>admin1234</code></div>
-            </div>
-            <a href="<?= base_url('/login') ?>" class="btn btn-primary btn-lg">데모 체험하기</a>
+            <p>지점 계정으로 로그인하면 강의 영상 시청 → 진도 저장 → 확인 시험 → 결과 확인까지 전 과정을 바로 진행할 수 있습니다.</p>
+            <ul class="demo__list">
+                <li>영상은 보던 위치가 저장되어 다음에 이어서 볼 수 있습니다.</li>
+                <li>영상을 끝까지 보면 시험이 열리고, 합격하면 강의가 통과로 표시됩니다.</li>
+                <li>불합격해도 영상을 다시 보고 재응시할 수 있습니다.</li>
+            </ul>
+            <a href="<?= base_url(is_logged_in() ? '/academy' : '/login') ?>" class="btn btn-primary btn-lg">강의실 입장</a>
         </div>
         <div class="demo__video">
             <div class="video-frame">

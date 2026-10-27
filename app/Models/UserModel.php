@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Libraries\PasswordHash;
 use CodeIgniter\Model;
 
 class UserModel extends Model
@@ -48,19 +49,36 @@ class UserModel extends Model
 
         try {
             $remote = \Config\Database::connect('booktree');
-            $row    = $remote->table('user')
-                ->select('num, id, name, type, status, phone, email')
+            // 아이디 비교는 예전 쿼리와 같이 DB(utf8_general_ci)에 맡기고, 비밀번호는 PHP 에서 검증
+            // (본사 user.password 는 "sha256$솔트$해시" 또는 아직 평문 - App\Libraries\PasswordHash)
+            $rows = $remote->table('user')
+                ->select('num, id, password, name, type, status, phone, email')
                 ->where('id', $loginId)
-                ->where('password', $password)
                 ->get()
-                ->getRowArray();
+                ->getResultArray();
         } catch (\Throwable $e) {
             log_message('error', '책나무 본사 DB 연결 실패: ' . $e->getMessage());
 
             return null;
         }
 
-        if (! $row || (int) $row['status'] !== 1) {
+        $row = null;
+        foreach ($rows as $candidate) {
+            if (PasswordHash::verify($password, $candidate['password'] ?? null)) {
+                $row = $candidate;
+                break;
+            }
+        }
+
+        if (! $row) {
+            log_message('info', '책나무 본사 계정 인증 실패: ' . $loginId . ' (' . count($rows) . '건 조회)');
+
+            return null;
+        }
+
+        if ((int) $row['status'] !== 1) {
+            log_message('info', '책나무 본사 계정 status=' . $row['status'] . ' 로 로그인 거부: ' . $loginId);
+
             return null;
         }
 

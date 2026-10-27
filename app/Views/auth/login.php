@@ -29,6 +29,10 @@
             책나무 온라인 교육 이용계정은 책나무 지원소프트웨어 지점 계정과 동일합니다.<br>
             로그인 관련 문의: <strong>책나무 본사 1522-9320</strong>
         </div>
+
+        <div class="auth__demo">
+            데모 체험 계정 · 아이디 <code>demo</code> / 비밀번호 <code>demo1234</code>
+        </div>
     </div>
 </section>
 <?= $this->endSection() ?>

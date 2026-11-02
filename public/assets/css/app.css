@@ -437,3 +437,8 @@ code { background: rgba(0,0,0,.06); padding: 2px 6px; border-radius: 6px; font-f
 .palette-preview__text { font-size: 14px; color: var(--muted); }
 .palette-preview__text strong { color: var(--course-color, var(--green)); font-size: 16px; }
 .demo__list { margin: 0 0 22px; padding-left: 20px; color: #dcefe4; font-size: 14px; line-height: 1.9; }
+
+/* ── 필수 시청 배지 / 강의 부가정보 ── */
+.badge-required { display: inline-block; background: #ffe9b3; color: #8a5a00; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; vertical-align: middle; margin-right: 4px; }
+.lesson-row__sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.warn-text { color: var(--danger); font-weight: 600; }

@@ -105,7 +105,7 @@ if (! function_exists('lesson_status_label')) {
     /**
      * 진도 레코드 → [상태코드, 라벨]
      */
-    function lesson_status_label(?array $progress): array
+    function lesson_status_label(?array $progress, int $questionCount = 1): array
     {
         if (! $progress) {
             return ['none', '미수강'];
@@ -114,13 +114,24 @@ if (! function_exists('lesson_status_label')) {
             return ['passed', '통과'];
         }
         if ((int) $progress['video_status'] === VIDEO_DONE) {
-            return ['video_done', '시험 대기'];
+            // 시험 문항이 없는 강의는 영상 시청 완료가 곧 통과
+            return $questionCount > 0 ? ['video_done', '시험 대기'] : ['passed', '시청 완료'];
         }
         if ((int) $progress['video_status'] === VIDEO_STARTED) {
             return ['watching', '수강중'];
         }
 
         return ['none', '미수강'];
+    }
+}
+
+if (! function_exists('lesson_passed')) {
+    /**
+     * 강의 통과 여부: 시험 합격, 또는 시험이 없는 강의는 영상 시청 완료
+     */
+    function lesson_passed(?array $progress, int $questionCount): bool
+    {
+        return lesson_status_label($progress, $questionCount)[0] === 'passed';
     }
 }
 

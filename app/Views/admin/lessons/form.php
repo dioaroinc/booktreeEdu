@@ -31,6 +31,21 @@
             </label>
         </div>
 
+        <div class="form-row">
+            <label>강연자
+                <input type="text" name="lecturer" value="<?= esc(old('lecturer', $lesson['lecturer'] ?? '')) ?>" maxlength="100" placeholder="예) 한혜경 교육본부장">
+            </label>
+            <label>교육 날짜
+                <input type="date" name="lecture_date" value="<?= esc(old('lecture_date', $lesson['lecture_date'] ?? '')) ?>">
+            </label>
+            <label>본사 자료실 번호
+                <input type="text" name="ref_no" value="<?= esc(old('ref_no', $lesson['ref_no'] ?? '')) ?>" maxlength="20" placeholder="예) 772">
+            </label>
+        </div>
+        <label class="check">
+            <input type="checkbox" name="is_required" value="1" <?= old('is_required', $lesson['is_required'] ?? 0) ? 'checked' : '' ?>> ★ 신규 원장님 필수 시청 자료
+        </label>
+
         <label>강의 소개
             <textarea name="description" rows="4" placeholder="강의 화면 아래에 표시되는 설명"><?= esc(old('description', $lesson['description'])) ?></textarea>
         </label>
@@ -57,7 +72,8 @@
                 <label>유튜브 주소 또는 영상 ID
                     <input type="text" name="video_url" value="<?= esc(old('video_url', $lesson['video_type'] === 'youtube' ? $lesson['video_url'] : '')) ?>" placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX" id="ytUrl">
                 </label>
-                <p class="hint">유튜브에서 「미등록(링크가 있는 사용자만)」으로 올리면 검색에 노출되지 않습니다. 영상이 끝까지 재생되면 자동으로 시청 완료 처리됩니다.</p>
+                <p class="hint">유튜브에서 「미등록(링크가 있는 사용자만)」으로 올리면 검색에 노출되지 않습니다. 영상이 끝까지 재생되면 자동으로 시청 완료 처리됩니다.<br>
+                    본사 자료실 번호를 입력하고 여기를 비워 두면, 강의 목록의 「본사 자료실에서 영상 주소 가져오기」로 자동으로 채울 수 있습니다.</p>
             </div>
 
             <div class="video-opt" data-type="url">

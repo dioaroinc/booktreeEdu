@@ -26,13 +26,19 @@
     <?php endif ?>
 
     <?php foreach ($group['lessons'] as $lesson): ?>
-        <?php [$state, $label] = lesson_status_label($lesson['progress']); ?>
+        <?php [$state, $label] = lesson_status_label($lesson['progress'], (int) $lesson['question_count']); $hasQuiz = (int) $lesson['question_count'] > 0; ?>
         <div class="lesson-row lesson-row--<?= $state ?>">
             <div class="lesson-row__num">제<?= $lesson['index'] ?>강</div>
             <div class="lesson-row__body">
-                <div class="lesson-row__title"><?= esc($lesson['title']) ?></div>
+                <div class="lesson-row__title">
+                    <?php if (! empty($lesson['is_required'])): ?><span class="badge-required" title="신규 원장님 필수 시청">★ 필수</span><?php endif ?>
+                    <?= esc($lesson['title']) ?>
+                </div>
+                <?php if (! empty($lesson['lecturer']) || ! empty($lesson['lecture_date'])): ?>
+                    <div class="lesson-row__sub"><?= esc($lesson['lecturer'] ?? '') ?><?= ! empty($lesson['lecture_date']) ? ' · ' . date('Y.m.d', strtotime($lesson['lecture_date'])) : '' ?></div>
+                <?php endif ?>
                 <div class="lesson-row__meta">
-                    총 <?= format_minutes((int) $lesson['duration_min']) ?> · 시험 문항 <?= (int) $lesson['question_count'] ?>개 · 합격 <?= (int) $lesson['pass_score'] ?>점
+                    <?= (int) $lesson['duration_min'] > 0 ? '총 ' . format_minutes((int) $lesson['duration_min']) . ' · ' : '' ?><?= $hasQuiz ? '시험 문항 ' . (int) $lesson['question_count'] . '개 · 합격 ' . (int) $lesson['pass_score'] . '점' : '시험 없음 (영상 시청 완료 시 통과)' ?>
                     <?php if ($lesson['progress'] && (int) $lesson['progress']['quiz_attempts'] > 0): ?>
                         · 최고 점수 <?= (int) $lesson['progress']['quiz_best'] ?>점 (<?= (int) $lesson['progress']['quiz_attempts'] ?>회 응시)
                     <?php endif ?>
@@ -42,16 +48,16 @@
             <div class="lesson-row__actions">
                 <?php if ($state === 'passed'): ?>
                     <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-soft">강의 다시 보기</a>
-                    <a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-soft-dark">문제 다시 풀기</a>
+                    <?php if ($hasQuiz): ?><a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-soft-dark">문제 다시 풀기</a><?php endif ?>
                 <?php elseif ($state === 'video_done'): ?>
                     <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-soft">강의 다시 보기</a>
                     <a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a>
                 <?php elseif ($state === 'watching'): ?>
                     <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-danger">강의 계속 보기</a>
-                    <a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a>
+                    <?php if ($hasQuiz): ?><a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a><?php endif ?>
                 <?php else: ?>
                     <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-primary">강의보기</a>
-                    <a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a>
+                    <?php if ($hasQuiz): ?><a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a><?php endif ?>
                 <?php endif ?>
             </div>
         </div>

@@ -66,6 +66,7 @@ class Lessons extends BaseController
             'sections' => model(SectionModel::class)->byCourse($courseId),
             'lesson'   => $lesson ?? [
                 'id' => 0, 'course_id' => $courseId, 'section_id' => null, 'title' => '', 'description' => '',
+                'ref_no' => '', 'lecturer' => '', 'lecture_date' => '', 'is_required' => 0,
                 'video_type' => VIDEO_TYPE_YOUTUBE, 'video_url' => '', 'video_file' => '',
                 'duration_min' => 10, 'pass_score' => 80, 'require_video' => 1, 'sort_order' => 0, 'is_active' => 1,
             ],
@@ -95,12 +96,17 @@ class Lessons extends BaseController
         $id    = (int) $this->request->getPost('id');
         $old   = $id ? $model->find($id) : null;
 
-        $videoType = $this->request->getPost('video_type');
-        $data      = [
+        $videoType   = $this->request->getPost('video_type');
+        $lectureDate = trim((string) $this->request->getPost('lecture_date'));
+        $data        = [
             'course_id'     => (int) $this->request->getPost('course_id'),
             'section_id'    => (int) $this->request->getPost('section_id') ?: null,
             'title'         => trim($this->request->getPost('title')),
             'description'   => trim((string) $this->request->getPost('description')),
+            'ref_no'        => trim((string) $this->request->getPost('ref_no')) ?: null,
+            'lecturer'      => trim((string) $this->request->getPost('lecturer')) ?: null,
+            'lecture_date'  => $lectureDate !== '' ? $lectureDate : null,
+            'is_required'   => $this->request->getPost('is_required') ? 1 : 0,
             'video_type'    => $videoType,
             'video_url'     => trim((string) $this->request->getPost('video_url')),
             'duration_min'  => (int) $this->request->getPost('duration_min'),
@@ -110,12 +116,14 @@ class Lessons extends BaseController
             'is_active'     => $this->request->getPost('is_active') ? 1 : 0,
         ];
 
-        // 유튜브 URL 검증
+        // 유튜브 URL 검증 (자료실 번호가 있으면 비워 두고 나중에 본사 자료실에서 가져올 수 있음)
         if ($videoType === VIDEO_TYPE_YOUTUBE && youtube_id($data['video_url']) === '') {
-            return redirect()->back()->withInput()->with('error', '올바른 유튜브 주소(또는 영상 ID)를 입력하세요.');
+            if ($data['video_url'] !== '' || $data['ref_no'] === null) {
+                return redirect()->back()->withInput()->with('error', '올바른 유튜브 주소(또는 영상 ID)를 입력하세요. 자료실 번호만 입력하고 비워 두면 나중에 "본사 자료실에서 영상 주소 가져오기"로 채울 수 있습니다.');
+            }
         }
 
-        if ($videoType === VIDEO_TYPE_URL && $data['video_url'] === '') {
+        if ($videoType === VIDEO_TYPE_URL && $data['video_url'] === '' && $data['ref_no'] === null) {
             return redirect()->back()->withInput()->with('error', '영상 파일 주소(URL)를 입력하세요.');
         }
 
@@ -180,6 +188,82 @@ class Lessons extends BaseController
         $model->delete($id);
 
         return redirect()->to('/admin/courses/' . $lesson['course_id'] . '/lessons')->with('success', '강의가 삭제되었습니다.');
+    }
+
+    /**
+     * 본사 자료실(bbs)에서 자료실 번호(ref_no)로 영상 주소 가져오기
+     *
+     *  - 영상 주소가 비어 있고 자료실 번호가 있는 강의만 채운다 (이미 입력된 주소는 유지)
+     *  - bbs.youtube 가 있으면 유튜브, 없고 bbs.vid 가 있으면 본사 서버의 영상 파일 주소
+     *  - 본사 DB 접속 정보는 .env 의 database.booktree.* (booktree.remoteAuth 와 무관하게 사용)
+     */
+    public function syncFromHq(): RedirectResponse
+    {
+        $model    = model(LessonModel::class);
+        $courseId = (int) $this->request->getPost('course_id');
+        $back     = $courseId ? '/admin/courses/' . $courseId . '/lessons' : '/admin/courses';
+
+        $builder = $model->where('ref_no IS NOT NULL')->where('ref_no !=', '')
+            ->groupStart()->where('video_url', '')->orWhere('video_url IS NULL')->groupEnd()
+            ->groupStart()->where('video_file', '')->orWhere('video_file IS NULL')->groupEnd();
+        if ($courseId) {
+            $builder->where('course_id', $courseId);
+        }
+        $targets = $builder->findAll();
+
+        if ($targets === []) {
+            return redirect()->to($back)->with('info', '영상 주소가 비어 있는 강의가 없습니다. (이미 입력된 주소는 바꾸지 않습니다)');
+        }
+
+        $refs = array_values(array_unique(array_map(static fn ($l) => (int) $l['ref_no'], $targets)));
+
+        try {
+            $hq   = \Config\Database::connect('booktree');
+            $rows = $hq->table('bbs')->select('num, youtube, vid, vid_ext')->whereIn('num', $refs)->get()->getResultArray();
+        } catch (\Throwable $e) {
+            log_message('error', '본사 자료실 조회 실패: ' . $e->getMessage());
+
+            return redirect()->to($back)->with('error', '본사 DB 에 연결하지 못했습니다. .env 의 database.booktree.* 설정을 확인하세요. (' . $e->getMessage() . ')');
+        }
+
+        $byNum = [];
+        foreach ($rows as $row) {
+            $byNum[(int) $row['num']] = $row;
+        }
+
+        $updated = 0;
+        $noVideo = [];
+        $missing = [];
+        foreach ($targets as $lesson) {
+            $num = (int) $lesson['ref_no'];
+            if (! isset($byNum[$num])) {
+                $missing[] = $num;
+                continue;
+            }
+            $post    = $byNum[$num];
+            $youtube = trim((string) $post['youtube']);
+            $vid     = trim((string) $post['vid']);
+
+            if ($youtube !== '' && youtube_id($youtube) !== '') {
+                $model->update($lesson['id'], ['video_type' => VIDEO_TYPE_YOUTUBE, 'video_url' => $youtube]);
+                $updated++;
+            } elseif ($vid !== '') {
+                $model->update($lesson['id'], ['video_type' => VIDEO_TYPE_URL, 'video_url' => HQ_VIDEO_BASE . $vid]);
+                $updated++;
+            } else {
+                $noVideo[] = $num;
+            }
+        }
+
+        $msg = '본사 자료실에서 영상 주소 ' . $updated . '건을 가져왔습니다.';
+        if ($noVideo !== []) {
+            $msg .= ' 영상이 없는 글: ' . implode(', ', $noVideo) . '.';
+        }
+        if ($missing !== []) {
+            $msg .= ' 자료실에 없는 번호: ' . implode(', ', $missing) . '.';
+        }
+
+        return redirect()->to($back)->with($updated > 0 ? 'success' : 'info', $msg);
     }
 
     /**

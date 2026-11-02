@@ -13,6 +13,8 @@
     </div>
 </div>
 
+<p class="muted" style="margin:-8px 0 16px">강의 목록의 <span class="badge-required">★ 필수</span> 표시는 신규 원장님이 교육 참가 전 반드시 시청해야 하는 자료입니다.</p>
+
 <div class="course-list">
     <?php foreach ($courses as $course): ?>
         <a href="<?= base_url('/academy/course/' . $course['id']) ?>" class="course-row" style="--course-color: <?= esc($course['color'], 'attr') ?>">

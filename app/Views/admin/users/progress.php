@@ -22,7 +22,7 @@
             <thead><tr><th style="width:60px">강의</th><th>제목</th><th>영상</th><th>재생 위치</th><th>응시</th><th>최고점</th><th>상태</th><th>통과일</th></tr></thead>
             <tbody>
             <?php foreach ($course['lessons'] as $i => $lesson): ?>
-                <?php $p = $lesson['progress']; [$state, $label] = lesson_status_label($p); ?>
+                <?php $p = $lesson['progress']; [$state, $label] = lesson_status_label($p, (int) $lesson['question_count']); ?>
                 <tr>
                     <td>제<?= $i + 1 ?>강</td>
                     <td><?= esc($lesson['title']) ?></td>

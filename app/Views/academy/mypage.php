@@ -30,7 +30,7 @@
             </thead>
             <tbody>
             <?php foreach ($course['lessons'] as $i => $lesson): ?>
-                <?php $p = $lesson['progress']; [$state, $label] = lesson_status_label($p); ?>
+                <?php $p = $lesson['progress']; [$state, $label] = lesson_status_label($p, (int) $lesson['question_count']); ?>
                 <tr>
                     <td>제<?= $i + 1 ?>강</td>
                     <td><a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>"><?= esc($lesson['title']) ?></a></td>

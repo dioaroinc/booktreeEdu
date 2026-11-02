@@ -10,8 +10,8 @@ class LessonModel extends Model
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
     protected $allowedFields = [
-        'course_id', 'section_id', 'title', 'description', 'video_type', 'video_url', 'video_file',
-        'duration_min', 'pass_score', 'require_video', 'sort_order', 'is_active',
+        'course_id', 'section_id', 'title', 'description', 'ref_no', 'lecturer', 'lecture_date', 'is_required',
+        'video_type', 'video_url', 'video_file', 'duration_min', 'pass_score', 'require_video', 'sort_order', 'is_active',
     ];
     protected $useTimestamps = true;
 

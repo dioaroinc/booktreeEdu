@@ -56,6 +56,7 @@ $routes->group('admin', static function (RouteCollection $routes): void {
     $routes->get('courses/(:num)/lessons/new', 'Admin\Lessons::form/$1');
     $routes->get('lessons/(:num)/edit', 'Admin\Lessons::form/0/$1');
     $routes->post('lessons/save', 'Admin\Lessons::save');
+    $routes->post('lessons/sync-hq', 'Admin\Lessons::syncFromHq');
     $routes->post('lessons/(:num)/delete', 'Admin\Lessons::delete/$1');
     $routes->post('sections/save', 'Admin\Lessons::saveSection');
     $routes->post('sections/(:num)/delete', 'Admin\Lessons::deleteSection/$1');

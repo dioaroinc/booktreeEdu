@@ -11,8 +11,13 @@
     <div class="player-head">
         <div>
             <?php if ($lesson['section_title']): ?><div class="player-section"><?= esc($lesson['section_title']) ?></div><?php endif ?>
-            <h1 class="player-title"><?= esc($lesson['title']) ?></h1>
-            <div class="player-meta">총 <?= format_minutes((int) $lesson['duration_min']) ?> · 시험 문항 <?= (int) $lesson['question_count'] ?>개 · 합격 <?= (int) $lesson['pass_score'] ?>점</div>
+            <h1 class="player-title"><?php if (! empty($lesson['is_required'])): ?><span class="badge-required">★ 필수</span> <?php endif ?><?= esc($lesson['title']) ?></h1>
+            <div class="player-meta">
+                <?php if (! empty($lesson['lecturer'])): ?>강연 <?= esc($lesson['lecturer']) ?> · <?php endif ?>
+                <?php if (! empty($lesson['lecture_date'])): ?>교육일 <?= date('Y.m.d', strtotime($lesson['lecture_date'])) ?> · <?php endif ?>
+                <?= (int) $lesson['duration_min'] > 0 ? '총 ' . format_minutes((int) $lesson['duration_min']) . ' · ' : '' ?>
+                <?= (int) $lesson['question_count'] > 0 ? '시험 문항 ' . (int) $lesson['question_count'] . '개 · 합격 ' . (int) $lesson['pass_score'] . '점' : '시험 없음 (영상 시청 완료 시 통과)' ?>
+            </div>
         </div>
         <div class="player-status" id="videoStatus" data-status="<?= (int) $progress['video_status'] ?>">
             <?= (int) $progress['video_status'] === VIDEO_DONE ? '✅ 시청 완료' : ((int) $progress['video_status'] === VIDEO_STARTED ? '▶ 시청중' : '미시청') ?>
@@ -27,7 +32,7 @@
          data-progress-url="<?= base_url('/academy/lesson/' . $lesson['id'] . '/progress') ?>"
          data-resume="<?= (int) $progress['video_seconds'] ?>"
          data-done="<?= (int) $progress['video_status'] === VIDEO_DONE ? 1 : 0 ?>">
-        <?php if ($lesson['video_type'] === VIDEO_TYPE_YOUTUBE): ?>
+        <?php if ($lesson['video_type'] === VIDEO_TYPE_YOUTUBE && youtube_id($lesson['video_url']) !== ''): ?>
             <div id="ytPlayer"></div>
         <?php elseif ($src !== ''): ?>
             <video id="htmlPlayer" controls controlsList="nodownload" playsinline preload="metadata" src="<?= esc($src, 'attr') ?>"></video>

@@ -3,7 +3,13 @@
 <?= $this->section('content') ?>
 <div class="toolbar">
     <p class="muted">교육과정을 등록하고, 각 과정 안에 단원과 강의(영상 + 시험)를 추가합니다.</p>
-    <a href="<?= base_url('/admin/courses/new') ?>" class="btn btn-primary">+ 교육과정 등록</a>
+    <div>
+        <form method="post" action="<?= base_url('/admin/lessons/sync-hq') ?>" class="inline" data-confirm="모든 과정에서 영상 주소가 비어 있는 강의를 본사 자료실 번호로 조회해 채웁니다. 진행할까요?">
+            <?= csrf_field() ?>
+            <button type="submit" class="btn btn-dark">⇅ 본사 자료실에서 영상 주소 가져오기</button>
+        </form>
+        <a href="<?= base_url('/admin/courses/new') ?>" class="btn btn-primary">+ 교육과정 등록</a>
+    </div>
 </div>
 
 <div class="card">

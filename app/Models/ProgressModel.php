@@ -15,6 +15,9 @@ class ProgressModel extends Model
     ];
     protected $useTimestamps = true;
 
+    /** 통과 조건: 시험 합격, 또는 시험 문항이 없는 강의의 영상 시청 완료 (p=progress, l=lessons 별칭 기준) */
+    public const PASSED_SQL = '(p.quiz_passed = 1 OR (p.video_status = 2 AND NOT EXISTS (SELECT 1 FROM questions q WHERE q.lesson_id = l.id)))';
+
     public function get(int $userId, int $lessonId): ?array
     {
         return $this->where(['user_id' => $userId, 'lesson_id' => $lessonId])->first();
@@ -99,8 +102,8 @@ class ProgressModel extends Model
         $passed = $this->db->table('progress p')
             ->join('lessons l', 'l.id = p.lesson_id')
             ->where('p.user_id', $userId)
-            ->where('p.quiz_passed', 1)
             ->where('l.is_active', 1)
+            ->where(self::PASSED_SQL, null, false)
             ->countAllResults();
 
         return [
@@ -117,7 +120,7 @@ class ProgressModel extends Model
     {
         return $this->db->table('users u')
             ->select('u.id, u.login_id, u.name, u.branch_name, u.type, u.status, u.last_login_at')
-            ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND p.quiz_passed = 1 AND l.is_active = 1) AS passed_count')
+            ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND l.is_active = 1 AND ' . self::PASSED_SQL . ') AS passed_count')
             ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND p.video_status = 2 AND l.is_active = 1) AS watched_count')
             ->select('(SELECT MAX(p.updated_at) FROM progress p WHERE p.user_id = u.id) AS last_activity')
             ->where('u.type', USER_TYPE_STUDENT)

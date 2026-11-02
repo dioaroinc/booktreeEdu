@@ -49,8 +49,7 @@ class Academy extends BaseController
             $lessons          = $this->lessons->byCourse((int) $course['id']);
             $course['passed'] = 0;
             foreach ($lessons as $lesson) {
-                $p = $progressMap[(int) $lesson['id']] ?? null;
-                if ($p && (int) $p['quiz_passed'] === 1) {
+                if (lesson_passed($progressMap[(int) $lesson['id']] ?? null, (int) $lesson['question_count'])) {
                     $course['passed']++;
                 }
             }
@@ -94,7 +93,7 @@ class Academy extends BaseController
             $index++;
             $lesson['index']    = $index;
             $lesson['progress'] = $progressMap[(int) $lesson['id']] ?? null;
-            if ($lesson['progress'] && (int) $lesson['progress']['quiz_passed'] === 1) {
+            if (lesson_passed($lesson['progress'], (int) $lesson['question_count'])) {
                 $passed++;
             }
             $key = (int) ($lesson['section_id'] ?? 0);

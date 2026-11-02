@@ -95,3 +95,6 @@ defined('VIDEO_STARTED') || define('VIDEO_STARTED', 1);
 defined('VIDEO_DONE')    || define('VIDEO_DONE', 2);
 
 defined('VIDEO_UPLOAD_PATH') || define('VIDEO_UPLOAD_PATH', FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'videos' . DIRECTORY_SEPARATOR);
+
+// 본사 사이트에 직접 업로드된 자료실 영상 파일의 공개 주소 (bbs.vid)
+defined('HQ_VIDEO_BASE') || define('HQ_VIDEO_BASE', 'https://www.booktreei.com/garage/video/');

@@ -23,8 +23,8 @@
                     <div class="progress-bar progress-bar--inline"><div class="progress-bar__fill" style="width: <?= $rate ?>%"></div></div>
                     <small><?= $rate ?>%</small>
                 </td>
-                <td><?= $r['last_activity'] ? date('Y-m-d H:i', strtotime($r['last_activity'])) : '-' ?></td>
-                <td><?= $r['last_login_at'] ? date('Y-m-d H:i', strtotime($r['last_login_at'])) : '-' ?></td>
+                <td class="col-date"><?= $r['last_activity'] ? date('Y-m-d H:i', strtotime($r['last_activity'])) : '-' ?></td>
+                <td class="col-date"><?= $r['last_login_at'] ? date('Y-m-d H:i', strtotime($r['last_login_at'])) : '-' ?></td>
             </tr>
         <?php endforeach ?>
         <?php if ($rows === []): ?><tr><td colspan="8" class="muted">수강생이 없습니다.</td></tr><?php endif ?>

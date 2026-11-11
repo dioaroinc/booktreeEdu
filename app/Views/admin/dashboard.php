@@ -36,7 +36,7 @@
             <tbody>
             <?php foreach ($recent as $r): ?>
                 <tr>
-                    <td><?= date('m-d H:i', strtotime($r['created_at'])) ?></td>
+                    <td class="col-date"><?= date('m-d H:i', strtotime($r['created_at'])) ?></td>
                     <td><a href="<?= base_url('/admin/users/' . $r['user_id'] . '/progress') ?>"><?= esc($r['user_name']) ?></a></td>
                     <td class="ellipsis"><?= esc($r['lesson_title']) ?></td>
                     <td><?= (int) $r['score'] ?>점</td>
@@ -61,7 +61,7 @@
                 <td><?= esc($u['login_id']) ?></td>
                 <td><?= (int) $u['watched_count'] ?></td>
                 <td><?= (int) $u['passed_count'] ?></td>
-                <td><?= $u['last_activity'] ? date('Y-m-d H:i', strtotime($u['last_activity'])) : '-' ?></td>
+                <td class="col-date"><?= $u['last_activity'] ? date('Y-m-d H:i', strtotime($u['last_activity'])) : '-' ?></td>
             </tr>
         <?php endforeach ?>
         </tbody>

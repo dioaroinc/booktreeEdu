@@ -21,14 +21,14 @@
         <tbody>
         <?php foreach ($users as $u): ?>
             <tr>
-                <td><strong><?= esc($u['name']) ?></strong></td>
+                <td class="nowrap"><strong><?= esc($u['name']) ?></strong></td>
                 <td><?= esc($u['login_id']) ?></td>
                 <td><?= esc($u['branch_name']) ?></td>
                 <td><?= esc($u['phone']) ?></td>
                 <td><?= (int) $u['type'] === USER_TYPE_ADMIN ? '<span class="status-pill status-admin">관리자</span>' : '수강생' ?></td>
                 <td><?= $u['source'] === 'booktree' ? '지점SW' : '직접 등록' ?></td>
                 <td><?= $u['status'] ? '<span class="status-pill status-passed">사용</span>' : '<span class="status-pill status-none">정지</span>' ?></td>
-                <td><?= $u['last_login_at'] ? date('Y-m-d H:i', strtotime($u['last_login_at'])) : '-' ?></td>
+                <td class="col-date"><?= $u['last_login_at'] ? date('Y-m-d H:i', strtotime($u['last_login_at'])) : '-' ?></td>
                 <td class="actions">
                     <a href="<?= base_url('/admin/users/' . $u['id'] . '/progress') ?>" class="btn btn-dark btn-sm">수강 현황</a>
                     <a href="<?= base_url('/admin/users/' . $u['id'] . '/edit') ?>" class="btn btn-soft btn-sm">수정</a>

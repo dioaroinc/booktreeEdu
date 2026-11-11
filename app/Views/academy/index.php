@@ -23,9 +23,9 @@
                 <h2><?= esc($course['title']) ?></h2>
                 <p><?= esc($course['subtitle']) ?></p>
                 <div class="course-row__meta">
-                    <span>🎬 강의 <?= (int) $course['lesson_count'] ?>개</span>
-                    <span>⏱ <?= format_minutes((int) $course['total_minutes']) ?></span>
-                    <span>✅ 통과 <?= $course['passed'] ?>개</span>
+                    <span>강의 <?= (int) $course['lesson_count'] ?>개</span>
+                    <?php if ((int) $course['total_minutes'] > 0): ?><span><?= format_minutes((int) $course['total_minutes']) ?></span><?php endif ?>
+                    <span>통과 <?= $course['passed'] ?>개</span>
                 </div>
                 <div class="progress-bar"><div class="progress-bar__fill" style="width: <?= $course['rate'] ?>%"></div></div>
             </div>

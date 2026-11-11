@@ -63,13 +63,13 @@
         <tr>
             <th style="width:60px">순서</th>
             <th>강의명</th>
-            <th style="width:150px">강연자 · 교육일</th>
+            <th style="width:140px">강연자 · 교육일</th>
             <th style="width:70px">자료실</th>
-            <th style="width:120px">영상</th>
+            <th style="width:100px">영상</th>
             <th style="width:60px">문항</th>
             <th style="width:60px">합격</th>
             <th style="width:80px">상태</th>
-            <th style="width:250px">관리</th>
+            <th style="width:226px">관리</th>
         </tr>
         </thead>
         <tbody>

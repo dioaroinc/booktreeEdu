@@ -14,31 +14,31 @@
 </div>
 
 <?php foreach ($courses as $course): ?>
-    <div class="section-bar" style="background: <?= esc($course['color'], 'attr') ?>"><?= esc($course['icon']) ?> <?= esc($course['title']) ?></div>
+    <div class="section-bar" style="--course-color: <?= esc($course['color'], 'attr') ?>"><?= esc($course['icon']) ?> <?= esc($course['title']) ?><span class="section-bar__count"><?= count($course['lessons']) ?>강</span></div>
     <div class="table-wrap">
-        <table class="table">
+        <table class="table table--progress">
             <thead>
             <tr>
-                <th style="width:60px">강의</th>
+                <th style="width:76px">강의</th>
                 <th>제목</th>
                 <th style="width:110px">영상</th>
                 <th style="width:90px">응시</th>
                 <th style="width:90px">최고점</th>
                 <th style="width:100px">상태</th>
-                <th style="width:150px">통과일</th>
+                <th style="width:160px">통과일</th>
             </tr>
             </thead>
             <tbody>
             <?php foreach ($course['lessons'] as $i => $lesson): ?>
                 <?php $p = $lesson['progress']; [$state, $label] = lesson_status_label($p, (int) $lesson['question_count']); ?>
                 <tr>
-                    <td>제<?= $i + 1 ?>강</td>
+                    <td class="col-num">제<?= $i + 1 ?>강</td>
                     <td><a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>"><?= esc($lesson['title']) ?></a></td>
                     <td><?= $p ? ((int) $p['video_status'] === VIDEO_DONE ? '시청완료' : ((int) $p['video_status'] === VIDEO_STARTED ? '시청중' : '-')) : '-' ?></td>
                     <td><?= $p ? (int) $p['quiz_attempts'] . '회' : '-' ?></td>
                     <td><?= $p && (int) $p['quiz_attempts'] > 0 ? (int) $p['quiz_best'] . '점' : '-' ?></td>
                     <td><span class="status-pill status-<?= $state ?>"><?= $label ?></span></td>
-                    <td><?= $p && $p['quiz_passed_at'] ? date('Y-m-d H:i', strtotime($p['quiz_passed_at'])) : '-' ?></td>
+                    <td class="col-date"><?= $p && $p['quiz_passed_at'] ? date('Y-m-d H:i', strtotime($p['quiz_passed_at'])) : '-' ?></td>
                 </tr>
             <?php endforeach ?>
             <?php if ($course['lessons'] === []): ?>
@@ -61,7 +61,7 @@
             ?>
             <?php foreach ($attempts as $a): ?>
                 <tr>
-                    <td><?= date('Y-m-d H:i', strtotime($a['created_at'])) ?></td>
+                    <td class="col-date"><?= date('Y-m-d H:i', strtotime($a['created_at'])) ?></td>
                     <td><a href="<?= base_url('/academy/quiz/' . $a['lesson_id'] . '/result/' . $a['id']) ?>"><?= esc($lessonTitles[$a['lesson_id']] ?? '(삭제된 강의)') ?></a></td>
                     <td><?= (int) $a['score'] ?>점</td>
                     <td><?= (int) $a['correct'] ?> / <?= (int) $a['total'] ?></td>

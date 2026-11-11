@@ -53,7 +53,7 @@
                     <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-soft">강의 다시 보기</a>
                     <a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a>
                 <?php elseif ($state === 'watching'): ?>
-                    <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-danger">강의 계속 보기</a>
+                    <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-primary">강의 계속 보기</a>
                     <?php if ($hasQuiz): ?><a href="<?= base_url('/academy/quiz/' . $lesson['id']) ?>" class="btn btn-dark">문제풀기</a><?php endif ?>
                 <?php else: ?>
                     <a href="<?= base_url('/academy/lesson/' . $lesson['id']) ?>" class="btn btn-primary">강의보기</a>

@@ -84,8 +84,8 @@
                     <p class="course-card__sub"><?= esc($course['subtitle']) ?></p>
                     <p class="course-card__desc"><?= esc($course['description']) ?></p>
                     <div class="course-card__meta">
-                        <span>🎬 강의 <?= (int) $course['lesson_count'] ?>개</span>
-                        <span>⏱ <?= format_minutes((int) $course['total_minutes']) ?></span>
+                        <span>동영상 강의 <?= (int) $course['lesson_count'] ?>개</span>
+                        <?php if ((int) $course['total_minutes'] > 0): ?><span>총 <?= format_minutes((int) $course['total_minutes']) ?></span><?php endif ?>
                     </div>
                     <a href="<?= base_url(is_logged_in() ? '/academy/course/' . $course['id'] : '/login') ?>" class="btn btn-outline">수강하러 가기</a>
                 </article>

@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <section class="auth">
     <div class="auth__box">
-        <img src="<?= base_url('assets/images/new_white_logo.png') ?>" alt="책나무" class="auth__logo">
+        <img src="<?= base_url('assets/images/logo.png') ?>" alt="책나무" class="auth__logo">
         <h1>온라인 교육 로그인</h1>
         <p class="auth__sub">책나무 지점SW 계정과 동일한 아이디로 로그인하세요.</p>
 

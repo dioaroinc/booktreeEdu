@@ -203,27 +203,37 @@ class Lessons extends BaseController
         $courseId = (int) $this->request->getPost('course_id');
         $back     = $courseId ? '/admin/courses/' . $courseId . '/lessons' : '/admin/courses';
 
-        $builder = $model->where('ref_no IS NOT NULL')->where('ref_no !=', '')
-            ->groupStart()->where('video_url', '')->orWhere('video_url IS NULL')->groupEnd()
-            ->groupStart()->where('video_file', '')->orWhere('video_file IS NULL')->groupEnd();
-        if ($courseId) {
-            $builder->where('course_id', $courseId);
+        // 1) 영상 강의 목록(컬럼 + 과정 4개 + 강의 45건)이 아직 DB 에 없으면 먼저 반영한다.
+        try {
+            $prepared = $this->prepareVideoList();
+
+            $builder = $model->where('ref_no IS NOT NULL')->where('ref_no !=', '')
+                ->groupStart()->where('video_url', '')->orWhere('video_url IS NULL')->groupEnd()
+                ->groupStart()->where('video_file', '')->orWhere('video_file IS NULL')->groupEnd();
+            if ($courseId) {
+                $builder->where('course_id', $courseId);
+            }
+            $targets = $builder->findAll();
+        } catch (\Throwable $e) {
+            log_message('error', '영상 강의 목록 준비 실패: ' . $e->getMessage());
+
+            return redirect()->to($back)->with('error', '영상 강의 목록을 준비하지 못했습니다. (' . $e->getMessage() . ')');
         }
-        $targets = $builder->findAll();
 
         if ($targets === []) {
-            return redirect()->to($back)->with('info', '영상 주소가 비어 있는 강의가 없습니다. (이미 입력된 주소는 바꾸지 않습니다)');
+            return redirect()->to($back)->with('info', trim($prepared . ' 영상 주소가 비어 있는 강의가 없습니다. (이미 입력된 주소는 바꾸지 않습니다)'));
         }
 
         $refs = array_values(array_unique(array_map(static fn ($l) => (int) $l['ref_no'], $targets)));
 
+        // 2) 본사 자료실(bbs)에서 영상 주소 조회
         try {
             $hq   = \Config\Database::connect('booktree');
             $rows = $hq->table('bbs')->select('num, youtube, vid, vid_ext')->whereIn('num', $refs)->get()->getResultArray();
         } catch (\Throwable $e) {
             log_message('error', '본사 자료실 조회 실패: ' . $e->getMessage());
 
-            return redirect()->to($back)->with('error', '본사 DB 에 연결하지 못했습니다. .env 의 database.booktree.* 설정을 확인하세요. (' . $e->getMessage() . ')');
+            return redirect()->to($back)->with('error', trim($prepared . ' 본사 DB 에 연결하지 못했습니다. .env 의 database.booktree.* 설정을 확인하세요. (' . $e->getMessage() . ')'));
         }
 
         $byNum = [];
@@ -231,31 +241,40 @@ class Lessons extends BaseController
             $byNum[(int) $row['num']] = $row;
         }
 
+        // 3) 강의에 반영
         $updated = 0;
         $noVideo = [];
         $missing = [];
-        foreach ($targets as $lesson) {
-            $num = (int) $lesson['ref_no'];
-            if (! isset($byNum[$num])) {
-                $missing[] = $num;
-                continue;
-            }
-            $post    = $byNum[$num];
-            $youtube = trim((string) $post['youtube']);
-            $vid     = trim((string) $post['vid']);
 
-            if ($youtube !== '' && youtube_id($youtube) !== '') {
-                $model->update($lesson['id'], ['video_type' => VIDEO_TYPE_YOUTUBE, 'video_url' => $youtube]);
-                $updated++;
-            } elseif ($vid !== '') {
-                $model->update($lesson['id'], ['video_type' => VIDEO_TYPE_URL, 'video_url' => HQ_VIDEO_BASE . $vid]);
-                $updated++;
-            } else {
-                $noVideo[] = $num;
+        try {
+            foreach ($targets as $lesson) {
+                $num = (int) $lesson['ref_no'];
+                if (! isset($byNum[$num])) {
+                    $missing[] = $num;
+
+                    continue;
+                }
+                $post    = $byNum[$num];
+                $youtube = trim((string) $post['youtube']);
+                $vid     = trim((string) $post['vid']);
+
+                if ($youtube !== '' && youtube_id($youtube) !== '') {
+                    $model->update($lesson['id'], ['video_type' => VIDEO_TYPE_YOUTUBE, 'video_url' => $youtube]);
+                    $updated++;
+                } elseif ($vid !== '') {
+                    $model->update($lesson['id'], ['video_type' => VIDEO_TYPE_URL, 'video_url' => HQ_VIDEO_BASE . $vid]);
+                    $updated++;
+                } else {
+                    $noVideo[] = $num;
+                }
             }
+        } catch (\Throwable $e) {
+            log_message('error', '영상 주소 저장 실패: ' . $e->getMessage());
+
+            return redirect()->to($back)->with('error', trim($prepared . ' 영상 주소 ' . $updated . '건 저장 후 오류가 났습니다. (' . $e->getMessage() . ')'));
         }
 
-        $msg = '본사 자료실에서 영상 주소 ' . $updated . '건을 가져왔습니다.';
+        $msg = trim($prepared . ' 본사 자료실에서 영상 주소 ' . $updated . '건을 가져왔습니다.');
         if ($noVideo !== []) {
             $msg .= ' 영상이 없는 글: ' . implode(', ', $noVideo) . '.';
         }
@@ -263,7 +282,64 @@ class Lessons extends BaseController
             $msg .= ' 자료실에 없는 번호: ' . implode(', ', $missing) . '.';
         }
 
-        return redirect()->to($back)->with($updated > 0 ? 'success' : 'info', $msg);
+        return redirect()->to($back)->with($updated > 0 || $prepared !== '' ? 'success' : 'info', $msg);
+    }
+
+    /**
+     * 영상 강의 목록이 아직 DB 에 반영되지 않았으면 반영한다. (deploy/videos_2026-11-02.sql 과 같은 작업)
+     *
+     * 카페24 에는 SSH 가 없어 `spark migrate` 를 못 돌리므로, 관리자 버튼만으로 끝낼 수 있게 한다.
+     * 이미 반영돼 있으면 아무것도 하지 않는다. 반환값은 화면에 보여줄 안내 문구(한 일이 없으면 빈 문자열).
+     */
+    private function prepareVideoList(): string
+    {
+        $db    = db_connect();
+        $notes = [];
+
+        // lessons 테이블의 자료실 번호 / 강연자 / 교육일 / 필수 컬럼 (AddLessonMeta 마이그레이션과 동일)
+        $columns = [
+            'ref_no'       => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true, 'after' => 'description', 'comment' => '본사 자료실(bbs) 글 번호'],
+            'lecturer'     => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true, 'after' => 'ref_no'],
+            'lecture_date' => ['type' => 'DATE', 'null' => true, 'after' => 'lecturer'],
+            'is_required'  => ['type' => 'TINYINT', 'null' => false, 'default' => 0, 'after' => 'lecture_date', 'comment' => '1=신규 원장 필수 시청(★)'],
+        ];
+
+        $added = false;
+        foreach ($columns as $name => $definition) {
+            if (! $db->fieldExists($name, 'lessons')) {
+                \Config\Database::forge()->addColumn('lessons', [$name => $definition]);
+                $db->resetDataCache();
+                $added = true;
+            }
+        }
+
+        if ($added) {
+            $notes[] = 'DB 구조를 업데이트했습니다.';
+
+            // 나중에 로컬에서 spark migrate 를 돌려도 같은 작업을 반복하지 않도록 이력을 남긴다.
+            $version = '2026-11-02-000001';
+            if ($db->tableExists('migrations') && $db->table('migrations')->where('version', $version)->countAllResults() === 0) {
+                $last = $db->table('migrations')->selectMax('batch')->get()->getRowArray();
+                $db->table('migrations')->insert([
+                    'version'   => $version,
+                    'class'     => 'App\Database\Migrations\AddLessonMeta',
+                    'group'     => 'default',
+                    'namespace' => 'App',
+                    'time'      => time(),
+                    'batch'     => (int) ($last['batch'] ?? 0) + 1,
+                ]);
+            }
+        }
+
+        // 자료실 번호가 달린 강의가 하나도 없으면 영상 리스트(과정 4개 + 강의 45건)를 등록
+        $countListed = static fn (): int => (int) $db->table('lessons')->where('ref_no IS NOT NULL')->where('ref_no !=', '')->countAllResults();
+
+        if ($countListed() === 0) {
+            \Config\Database::seeder()->call(\App\Database\Seeds\VideoListSeeder::class);
+            $notes[] = '영상 강의 ' . $countListed() . '건을 등록했습니다.';
+        }
+
+        return implode(' ', $notes);
     }
 
     /**

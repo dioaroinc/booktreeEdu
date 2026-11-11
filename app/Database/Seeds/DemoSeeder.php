@@ -303,6 +303,11 @@ class DemoSeeder extends Seeder
                     'updated_at'     => $now,
                 ],
             ]);
+            // 데모 응시 기록: 결과 화면에서 문항별 정답 표시가 맞게 보이도록 정답으로 채운다
+            $demoAnswers = [];
+            foreach ($this->db->table('questions')->where('lesson_id', $lessonIds[0])->get()->getResultArray() as $q) {
+                $demoAnswers[$q['id']] = (int) $q['answer'];
+            }
             $this->db->table('quiz_attempts')->insert([
                 'user_id'    => $demoUser['id'],
                 'lesson_id'  => $lessonIds[0],
@@ -310,7 +315,7 @@ class DemoSeeder extends Seeder
                 'correct'    => 5,
                 'total'      => 5,
                 'passed'     => 1,
-                'answers'    => json_encode([]),
+                'answers'    => json_encode($demoAnswers),
                 'created_at' => $now,
             ]);
         }

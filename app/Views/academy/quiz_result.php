@@ -9,7 +9,7 @@
 
 <?php $passed = (int) $attempt['passed'] === 1; ?>
 <div class="result-card result-card--<?= $passed ? 'pass' : 'fail' ?>">
-    <div class="result-card__icon"><?= $passed ? '🎉' : '😢' ?></div>
+    <div class="result-card__icon" aria-hidden="true"><?= $passed ? '✓' : '!' ?></div>
     <div class="result-card__body">
         <div class="result-card__label"><?= $passed ? '축하합니다! 시험에 통과했습니다.' : '아쉽게도 합격 기준에 미달했습니다.' ?></div>
         <div class="result-card__score"><?= (int) $attempt['score'] ?><small>점</small></div>
@@ -32,15 +32,19 @@
 </div>
 
 <h2 class="sub-title">문항별 결과</h2>
+<?php $hasRecord = $given !== []; // 문항별 답안이 저장되지 않은 기록(예: 데모 초기 데이터)은 정답만 보여준다 ?>
+<?php if (! $hasRecord): ?>
+    <p class="muted" style="margin:-4px 0 12px">이 응시 기록에는 문항별 답안이 저장되어 있지 않아 정답만 표시합니다.</p>
+<?php endif ?>
 
 <?php foreach ($questions as $i => $q): ?>
     <?php
         $mine    = (int) ($given[$q['id']] ?? 0);
         $correct = $mine === (int) $q['answer'];
     ?>
-    <div class="review-q review-q--<?= $correct ? 'ok' : 'no' ?>">
+    <div class="review-q <?= $hasRecord ? ($correct ? 'review-q--ok' : 'review-q--no') : '' ?>">
         <div class="review-q__head">
-            <span class="review-q__badge"><?= $correct ? '정답' : '오답' ?></span>
+            <?php if ($hasRecord): ?><span class="review-q__badge"><?= $correct ? '정답' : '오답' ?></span><?php endif ?>
             <span class="quiz-q__num">Q<?= $i + 1 ?></span> <?= nl2br(esc($q['question'])) ?>
         </div>
         <div class="review-q__choices">

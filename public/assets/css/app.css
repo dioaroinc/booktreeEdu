@@ -317,21 +317,20 @@ code { background: rgba(0,0,0,.06); padding: 2px 6px; border-radius: 6px; font-f
 .quiz-submit { display: flex; align-items: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
 .quiz-submit__count { font-size: 14px; color: var(--muted); margin-right: auto; }
 
-.result-card { display: grid; grid-template-columns: 80px 1fr auto; gap: 24px; align-items: center; border-radius: 20px; padding: 28px 32px; color: #fff; margin-bottom: 10px; }
+.result-card { display: grid; grid-template-columns: 64px 1fr auto; gap: 24px; align-items: center; border-radius: 20px; padding: 28px 32px; color: #fff; margin-bottom: 10px; }
 .result-card--pass { background: linear-gradient(140deg, #17774b 0%, var(--green) 55%, #0a3f28 100%); }
 .result-card--fail { background: linear-gradient(140deg, #8a3434 0%, #6f2626 100%); }
-.result-card__icon { font-size: 56px; text-align: center; }
+.result-card__icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center; justify-self: center; font-size: 30px; font-weight: 800; line-height: 1; }
 .result-card__label { font-size: 17px; font-weight: 600; }
 .result-card__score { font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
 .result-card__score small { font-size: 20px; margin-left: 4px; font-weight: 600; }
 .result-card__meta { font-size: 14px; opacity: .88; }
 .result-card__actions { display: flex; flex-direction: column; gap: 8px; }
 .review-q { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin-bottom: 10px; }
-.review-q--ok { border-left: 4px solid var(--green); }
-.review-q--no { border-left: 4px solid var(--danger); }
+.review-q--no { border-color: #f0d2d2; }
 .review-q__head { font-weight: 700; font-size: 16px; margin-bottom: 12px; }
-.review-q__badge { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px; margin-right: 8px; background: var(--green); color: #fff; }
-.review-q--no .review-q__badge { background: var(--danger); }
+.review-q__badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; margin-right: 8px; background: #e7f5ec; color: #0f6b3f; }
+.review-q--no .review-q__badge { background: #fdeeee; color: var(--danger); }
 .review-q__choices { display: flex; flex-direction: column; gap: 6px; }
 .review-q__exp { margin-top: 12px; font-size: 14px; color: #5a4a10; background: #fffaeb; padding: 10px 14px; border-radius: 10px; }
 

@@ -33,6 +33,12 @@
                         <strong><?= esc($c['label']) ?></strong>
                         <span><?= esc($c['detail']) ?></span>
                     </div>
+                    <?php if (! empty($c['action'])): ?>
+                        <form method="post" action="<?= base_url($c['action']['url']) ?>" class="guide-check__action" data-confirm="<?= esc($c['action']['confirm'], 'attr') ?>">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-danger-soft btn-sm"><?= esc($c['action']['label']) ?></button>
+                        </form>
+                    <?php endif ?>
                 </li>
             <?php endforeach ?>
         </ul>

@@ -32,7 +32,8 @@ GitHub 저장소 > **Settings > Secrets and variables > Actions > New repository
 
 1. **PHP 8.2 이상**으로 설정 (호스팅 관리 > PHP 버전). 확장 `intl`, `mbstring`, `mysqli`, `curl` 필요.
 2. **DB 만들기**: phpMyAdmin 에서 `deploy/booktreeedu.sql` 을 가져오기(import).
-   - 테이블 7개 + 데모 데이터(관리자 `admin / admin1234`, 수강생 `demo / demo1234`)가 들어갑니다.
+   - 테이블 + 영상 교육과정 4개(강의 45건) + 기본 계정(관리자 `admin / admin1234`, 체험용 수강생 `demo / demo1234`)이 들어갑니다. 데모 과정은 포함되지 않습니다.
+   - 예전 덤프로 설치해 데모 과정(신규원장교육 / 지점SW 사용교육 / 보수교육)이 남아 있으면 관리자 > 운영 가이드 > 「데모 과정 삭제」 버튼으로 지웁니다.
    - **가져온 뒤 관리자 비밀번호를 꼭 바꾸세요** (관리자 > 회원 관리).
 3. **`.env` 만들기**: `env.production.example` 내용을 복사해 `/www/.env` 로 올리고 수정
    - `app.baseURL` = 실제 주소 (끝에 `/`)

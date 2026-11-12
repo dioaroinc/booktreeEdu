@@ -5,6 +5,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\ProgressModel;
 use App\Models\UserModel;
+use CodeIgniter\HTTP\RedirectResponse;
 
 /**
  * 관리자 운영 · 셋팅 가이드
@@ -14,6 +15,9 @@ use App\Models\UserModel;
  */
 class Guide extends BaseController
 {
+    /** 설치할 때 함께 들어가는 데모 과정 (DemoSeeder 가 만든 것) */
+    private const DEMO_COURSE_TITLES = ['신규원장교육', '지점SW 사용교육', '보수교육'];
+
     public function index(): string
     {
         return view('admin/guide', [
@@ -31,9 +35,68 @@ class Guide extends BaseController
     }
 
     /**
+     * 데모 과정과 그 안의 데모 강의를 모두 삭제한다. (강의의 시험 문항 · 수강 기록 · 응시 기록 포함)
+     * 데모 수강생 계정(demo)은 건드리지 않는다.
+     */
+    public function removeDemo(): RedirectResponse
+    {
+        $db = db_connect();
+
+        try {
+            $courses = $this->demoCourses();
+            if ($courses === []) {
+                return redirect()->to('/admin/guide')->with('info', '삭제할 데모 과정이 없습니다. (이미 삭제되었습니다)');
+            }
+
+            $courseIds = array_map('intval', array_column($courses, 'id'));
+            $lessons   = $db->table('lessons')->select('id, video_file')->whereIn('course_id', $courseIds)->get()->getResultArray();
+            $lessonIds = array_map('intval', array_column($lessons, 'id'));
+
+            $db->transException(true)->transStart();
+            if ($lessonIds !== []) {
+                $db->table('questions')->whereIn('lesson_id', $lessonIds)->delete();
+                $db->table('progress')->whereIn('lesson_id', $lessonIds)->delete();
+                $db->table('quiz_attempts')->whereIn('lesson_id', $lessonIds)->delete();
+                $db->table('lessons')->whereIn('id', $lessonIds)->delete();
+            }
+            $db->table('sections')->whereIn('course_id', $courseIds)->delete();
+            $db->table('courses')->whereIn('id', $courseIds)->delete();
+            $db->transComplete();
+
+            // DB 삭제가 끝난 뒤에 업로드 파일 정리 (데모 강의는 보통 외부 주소라 파일이 없다)
+            foreach ($lessons as $lesson) {
+                if ($lesson['video_file'] && is_file(VIDEO_UPLOAD_PATH . $lesson['video_file'])) {
+                    @unlink(VIDEO_UPLOAD_PATH . $lesson['video_file']);
+                }
+            }
+        } catch (\Throwable $e) {
+            log_message('error', '데모 과정 삭제 실패: ' . $e->getMessage());
+
+            return redirect()->to('/admin/guide')->with('error', '데모 과정을 삭제하지 못했습니다. (' . $e->getMessage() . ')');
+        }
+
+        return redirect()->to('/admin/guide')->with('success', '데모 과정 ' . count($courses) . '개와 데모 강의 ' . count($lessonIds) . '개를 삭제했습니다.');
+    }
+
+    /**
+     * 남아 있는 데모 과정 목록 (강의 수 포함)
+     *
+     * @return list<array{id:string,title:string,is_active:string,lesson_count:string}>
+     */
+    private function demoCourses(): array
+    {
+        return db_connect()->table('courses c')
+            ->select('c.id, c.title, c.is_active')
+            ->select('(SELECT COUNT(*) FROM lessons l WHERE l.course_id = c.id) AS lesson_count', false)
+            ->whereIn('c.title', self::DEMO_COURSE_TITLES)
+            ->orderBy('c.id')
+            ->get()->getResultArray();
+    }
+
+    /**
      * 처음 셋팅할 때 확인할 항목들. state: ok(정상) / warn(조치 필요) / info(참고)
      *
-     * @return list<array{state:string,label:string,detail:string}>
+     * @return list<array{state:string,label:string,detail:string,action?:array{url:string,label:string,confirm:string}}>
      */
     private function checks(): array
     {
@@ -69,6 +132,29 @@ class Guide extends BaseController
             );
         } else {
             $add('info', '본사(지점SW) 계정 로그인', '꺼져 있습니다. 회원 관리에서 직접 만든 계정만 로그인할 수 있습니다.');
+        }
+
+        // 2-1) 설치할 때 들어간 데모 과정이 남아 있는지
+        try {
+            $demo = $this->demoCourses();
+            if ($demo !== []) {
+                $names   = implode(', ', array_map(static fn ($c) => $c['title'] . '(강의 ' . (int) $c['lesson_count'] . '개)', $demo));
+                $lessons = array_sum(array_map(static fn ($c) => (int) $c['lesson_count'], $demo));
+                $checks[] = [
+                    'state'  => 'warn',
+                    'label'  => '데모 과정',
+                    'detail' => '설치할 때 들어간 데모 과정이 남아 있습니다: ' . $names . '. 실제 운영에 쓰지 않으면 삭제하세요.',
+                    'action' => [
+                        'url'     => '/admin/guide/remove-demo',
+                        'label'   => '데모 과정 삭제',
+                        'confirm' => '데모 과정 ' . count($demo) . '개와 그 안의 강의 ' . $lessons . '개를 삭제합니다. 강의의 시험 문항과 수강 기록도 함께 지워지며 되돌릴 수 없습니다. 삭제할까요?',
+                    ],
+                ];
+            } else {
+                $add('ok', '데모 과정', '데모 과정이 남아 있지 않습니다.');
+            }
+        } catch (\Throwable $e) {
+            $add('info', '데모 과정', '확인하지 못했습니다.');
         }
 
         // 3) 영상 / 시험이 비어 있는 공개 강의

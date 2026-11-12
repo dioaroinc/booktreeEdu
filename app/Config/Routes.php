@@ -44,6 +44,7 @@ $routes->group('academy', static function (RouteCollection $routes): void {
 $routes->group('admin', static function (RouteCollection $routes): void {
     $routes->get('/', 'Admin\Dashboard::index');
     $routes->get('guide', 'Admin\Guide::index');
+    $routes->post('guide/remove-demo', 'Admin\Guide::removeDemo');
 
     // 교육과정
     $routes->get('courses', 'Admin\Courses::index');

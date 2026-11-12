@@ -23,8 +23,8 @@
         <div class="hero__visual">
             <div class="hero__card hero__card--video">
                 <div class="hero__play">▶</div>
-                <div class="hero__card-title">제1강 접속방법, 메인프로그램 소개</div>
-                <div class="hero__card-sub">총 10분 · 시험 문항 5개</div>
+                <div class="hero__card-title">책나무 온라인 교육 강의</div>
+                <div class="hero__card-sub">영상 시청 · 확인 시험</div>
             </div>
             <div class="hero__card hero__card--quiz">
                 <div class="hero__quiz-q">Q. 책나무 독서교육에서 "독서"의 의미는?</div>
@@ -144,7 +144,7 @@
                         title="데모 강의 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen loading="lazy"></iframe>
             </div>
-            <div class="demo__caption">제1강 접속방법, 메인프로그램 소개, 진단평가 (데모 영상)</div>
+            <div class="demo__caption">강의 화면 예시 영상</div>
         </div>
     </div>
 </section>

@@ -523,6 +523,8 @@ code { background: rgba(0,0,0,.06); padding: 2px 6px; border-radius: 6px; font-f
 .guide-check__item:last-child { border-bottom: 0; }
 .guide-check__item--warn { background: #fffaeb; }
 .guide-check__item strong { display: block; color: var(--ink); font-weight: 600; }
+.guide-check__item > div { flex: 1; min-width: 0; }
+.guide-check__action { flex: none; align-self: center; margin: 0; }
 .guide-check__item span { color: var(--ink-2); font-size: 13px; }
 .guide-dot { flex: none; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-top: 7px; background: var(--line-strong); }
 .guide-check__item .guide-dot { margin-top: 7px; }

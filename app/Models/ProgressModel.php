@@ -94,15 +94,21 @@ class ProgressModel extends Model
     }
 
     /**
+     * 수강생에게 실제로 보이는 강의: 강의가 공개이고, 그 강의가 속한 과정도 공개인 것. (lessons 별칭 l 기준)
+     * 과정을 비공개로 돌리면 그 안의 강의는 통과율 계산에서 빠져야 한다.
+     */
+    public const ACTIVE_LESSON_SQL = '(l.is_active = 1 AND EXISTS (SELECT 1 FROM courses c WHERE c.id = l.course_id AND c.is_active = 1))';
+
+    /**
      * 회원별 요약: 전체 강의 수 / 통과 수 / 통과율
      */
     public function summaryForUser(int $userId): array
     {
-        $total  = $this->db->table('lessons')->where('is_active', 1)->countAllResults();
+        $total  = $this->db->table('lessons l')->where(self::ACTIVE_LESSON_SQL, null, false)->countAllResults();
         $passed = $this->db->table('progress p')
             ->join('lessons l', 'l.id = p.lesson_id')
             ->where('p.user_id', $userId)
-            ->where('l.is_active', 1)
+            ->where(self::ACTIVE_LESSON_SQL, null, false)
             ->where(self::PASSED_SQL, null, false)
             ->countAllResults();
 
@@ -120,8 +126,8 @@ class ProgressModel extends Model
     {
         return $this->db->table('users u')
             ->select('u.id, u.login_id, u.name, u.branch_name, u.type, u.status, u.last_login_at')
-            ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND l.is_active = 1 AND ' . self::PASSED_SQL . ') AS passed_count')
-            ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND p.video_status = 2 AND l.is_active = 1) AS watched_count')
+            ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND ' . self::ACTIVE_LESSON_SQL . ' AND ' . self::PASSED_SQL . ') AS passed_count')
+            ->select('(SELECT COUNT(*) FROM progress p JOIN lessons l ON l.id = p.lesson_id WHERE p.user_id = u.id AND p.video_status = 2 AND ' . self::ACTIVE_LESSON_SQL . ') AS watched_count')
             ->select('(SELECT MAX(p.updated_at) FROM progress p WHERE p.user_id = u.id) AS last_activity')
             ->where('u.type', USER_TYPE_STUDENT)
             ->orderBy('u.name')

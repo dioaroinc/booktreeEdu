@@ -28,6 +28,7 @@
         <a href="<?= base_url('/admin/courses') ?>" class="<?= $active('admin/courses') ?: $active('admin/lessons') ?: $active('admin/sections') ?>">📚 교육과정 · 강의</a>
         <a href="<?= base_url('/admin/users') ?>" class="<?= $active('admin/users') ?>">🧑‍🏫 회원 관리</a>
         <a href="<?= base_url('/admin/progress') ?>" class="<?= $active('admin/progress') ?>">📈 수강 현황</a>
+        <a href="<?= base_url('/admin/guide') ?>" class="<?= $active('admin/guide') ?>">📖 운영 가이드</a>
         <div class="admin-side__sep"></div>
         <a href="<?= base_url('/academy') ?>">🎓 수강생 화면 보기</a>
         <a href="<?= base_url('/') ?>">🏠 홍보 메인 페이지</a>

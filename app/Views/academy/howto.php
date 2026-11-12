@@ -12,7 +12,7 @@
     <li class="step">
         <div class="step__num">1</div>
         <h3>교육과정 선택</h3>
-        <p><a href="<?= base_url('/academy') ?>">강의실</a>에서 수강할 과정(신규원장교육 / 지점SW 사용교육 / 보수교육)을 선택합니다.</p>
+        <p><a href="<?= base_url('/academy') ?>">강의실</a>에서 수강할 교육과정을 선택합니다. <span class="badge-required">★ 필수</span> 표시가 있는 강의는 신규 원장님이 꼭 봐야 하는 강의입니다.</p>
     </li>
     <li class="step">
         <div class="step__num">2</div>

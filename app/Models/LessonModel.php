@@ -63,8 +63,11 @@ class LessonModel extends Model
         return null;
     }
 
+    /**
+     * 수강생에게 보이는 강의 수 (공개 과정의 공개 강의)
+     */
     public function countActive(): int
     {
-        return $this->where('is_active', 1)->countAllResults();
+        return $this->db->table('lessons l')->where(ProgressModel::ACTIVE_LESSON_SQL, null, false)->countAllResults();
     }
 }

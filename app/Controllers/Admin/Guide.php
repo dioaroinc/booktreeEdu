@@ -21,16 +21,10 @@ class Guide extends BaseController
     public function index(): string
     {
         return view('admin/guide', [
-            'title'  => '운영 가이드',
-            'checks' => $this->checks(),
-            'server' => [
-                'PHP 버전'        => PHP_VERSION,
-                '실행 환경'       => ENVIRONMENT === 'production' ? '운영 (production)' : ENVIRONMENT,
-                '사이트 주소'     => base_url(),
-                '파일 1개 업로드 한도' => (string) ini_get('upload_max_filesize'),
-                '전송 전체 한도'  => (string) ini_get('post_max_size'),
-                '실행 시간 제한'  => ini_get('max_execution_time') . '초',
-            ],
+            'title'       => '운영 가이드',
+            'checks'      => $this->checks(),
+            // 3번(영상 파일 업로드) 설명에 쓰는 이 서버의 파일 1개 업로드 한도
+            'uploadLimit' => (string) ini_get('upload_max_filesize'),
         ]);
     }
 

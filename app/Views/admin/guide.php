@@ -5,7 +5,7 @@
 
     <p class="guide__lead">
         책나무 온라인 교육을 운영하는 관리자를 위한 안내입니다.
-        평소 운영은 <strong>1 ~ 7번</strong>만 보면 되고, <strong>8 · 9번</strong>은 서버를 처음 설치하거나 문제가 생겼을 때 봅니다.
+        맨 위 <strong>처음 셋팅 점검</strong>에서 지금 상태를 확인하고, 아래 순서대로 따라 하면 됩니다.
     </p>
 
     <nav class="guide-toc" aria-label="가이드 목차">
@@ -17,8 +17,6 @@
         <a href="#g-user">5. 회원 관리</a>
         <a href="#g-progress">6. 수강 현황</a>
         <a href="#g-rule">7. 통과 기준</a>
-        <a href="#g-server">8. 서버 셋팅</a>
-        <a href="#g-trouble">9. 문제 해결</a>
     </nav>
 
     <!-- ───────── 처음 셋팅 점검 ───────── -->
@@ -108,7 +106,7 @@
             <tr>
                 <td><strong>📁 영상 파일 업로드</strong></td>
                 <td>유튜브에 올릴 수 없는 영상을 서버에 직접 올립니다. (mp4, webm, mov)</td>
-                <td>이 서버의 업로드 한도는 파일 1개당 <strong><?= esc($server['파일 1개 업로드 한도']) ?></strong>입니다. 더 큰 파일은 유튜브나 외부 주소를 쓰세요.</td>
+                <td>이 서버의 업로드 한도는 파일 1개당 <strong><?= esc($uploadLimit) ?></strong>입니다. 더 큰 파일은 유튜브나 외부 주소를 쓰세요.</td>
             </tr>
             <tr>
                 <td><strong>🔗 외부 영상 URL</strong></td>
@@ -190,75 +188,6 @@
             <tr><td><span class="status-pill status-passed">시청 완료</span></td><td>시험 문항이 없는 강의를 끝까지 봤습니다. 통과로 계산됩니다.</td></tr>
             </tbody>
         </table>
-    </section>
-
-    <!-- ───────── 8. 서버 셋팅 ───────── -->
-    <section class="card guide-section" id="g-server">
-        <h2>8. 서버 셋팅 <span class="guide-tag">전산 담당자용</span></h2>
-
-        <h3>지금 서버 정보</h3>
-        <dl class="guide-kv">
-            <?php foreach ($server as $k => $v): ?>
-                <div><dt><?= esc($k) ?></dt><dd><?= esc($v) ?></dd></div>
-            <?php endforeach ?>
-        </dl>
-
-        <h3>설정 파일 (.env)</h3>
-        <p>서버의 <code>/www/.env</code> 파일 하나에 모든 설정이 들어 있습니다. 배포해도 덮어쓰지 않으므로 FTP 로 직접 고칩니다. (FTP 프로그램에서 「숨김 파일 표시」를 켜야 보입니다)</p>
-        <table class="table guide-table">
-            <thead><tr><th style="width:260px">항목</th><th>설명</th></tr></thead>
-            <tbody>
-            <tr><td><code>app.baseURL</code></td><td>사이트 주소. 끝에 <code>/</code> 를 붙입니다. 틀리면 화면 디자인(CSS)이 깨져 보입니다.</td></tr>
-            <tr><td><code>database.default.*</code></td><td>교육 사이트 자체 DB 접속 정보 (과정, 강의, 수강 기록이 여기에 저장됩니다).</td></tr>
-            <tr><td><code>booktree.remoteAuth</code></td><td><code>true</code> 면 지점SW 계정으로 로그인할 수 있습니다. <code>false</code> 면 직접 만든 계정만 됩니다.</td></tr>
-            <tr><td><code>database.booktree.*</code></td><td>본사 DB 접속 정보. 지점SW 계정 로그인과 「본사 자료실에서 영상 주소 가져오기」가 이 정보를 씁니다. 본사 DB 쪽에서 <strong>이 서버의 IP 를 외부 접속 허용</strong>에 넣어야 합니다.</td></tr>
-            </tbody>
-        </table>
-
-        <h3>프로그램 수정과 배포</h3>
-        <ul class="guide-list">
-            <li>프로그램은 GitHub 저장소의 <code>main</code> 브랜치에 올리면 <strong>자동으로 서버에 배포</strong>됩니다. 보통 몇 분 걸립니다.</li>
-            <li>배포는 <code>.env</code>, 업로드한 영상, 로그 파일을 건드리지 않습니다.</li>
-            <li>DB 구조를 바꿔야 하는 수정은 교육 사이트 계정의 phpMyAdmin 에서 SQL 로 반영합니다. (본사 DB 가 아닙니다)</li>
-        </ul>
-
-        <h3>영상 업로드 용량 늘리기</h3>
-        <p>호스팅 관리 화면에서 <code>upload_max_filesize</code>, <code>post_max_size</code>, <code>max_execution_time</code> 값을 올립니다. 호스팅에서 올려 주지 않으면 영상은 유튜브에 올리고 주소만 넣는 방법을 쓰세요.</p>
-    </section>
-
-    <!-- ───────── 9. 문제 해결 ───────── -->
-    <section class="card guide-section" id="g-trouble">
-        <h2>9. 문제가 생겼을 때</h2>
-        <table class="table guide-table">
-            <thead><tr><th style="width:32%">증상</th><th>확인할 것</th></tr></thead>
-            <tbody>
-            <tr>
-                <td><strong>「Whoops!」 화면이 뜬다</strong></td>
-                <td>서버의 <code>/www/writable/logs/log-날짜.log</code> 파일 맨 아래에 원인이 적혀 있습니다. 그 내용을 전산 담당자에게 전달하세요.</td>
-            </tr>
-            <tr>
-                <td><strong>지점SW 계정으로 로그인이 안 된다</strong></td>
-                <td>① 지점SW 에서는 로그인이 되는지 ② 위 「처음 셋팅 점검」의 본사 계정 로그인이 켜져 있는지 ③ 본사 DB 의 외부 접속 허용 IP 에 이 서버가 들어 있는지 확인합니다. 폐점 처리된 지점은 로그인되지 않습니다.</td>
-            </tr>
-            <tr>
-                <td><strong>영상이 재생되지 않는다</strong></td>
-                <td>유튜브 영상이면 공개 범위가 「비공개」가 아닌지, 주소가 맞는지 확인합니다. 강의 목록에 「⚠ 영상 없음」이 떠 있으면 영상 주소가 비어 있는 것입니다.</td>
-            </tr>
-            <tr>
-                <td><strong>영상을 다 봤는데 시청 완료가 안 된다</strong></td>
-                <td>영상이 끝부분(전체의 95% 지점)까지 재생되어야 시청 완료가 됩니다. 인터넷이 끊기면 저장되지 않으니 새로고침한 뒤 끝부분을 다시 재생해 보도록 안내하세요.</td>
-            </tr>
-            <tr>
-                <td><strong>영상 파일 업로드가 실패한다</strong></td>
-                <td>파일이 업로드 한도(<?= esc($server['파일 1개 업로드 한도']) ?>)보다 크거나, 업로드 폴더에 쓰기 권한이 없는 경우입니다. 위 「처음 셋팅 점검」을 확인하세요.</td>
-            </tr>
-            <tr>
-                <td><strong>화면 디자인이 깨져 보인다</strong></td>
-                <td><code>.env</code> 의 <code>app.baseURL</code> 이 실제 접속 주소와 같은지 확인하고, 브라우저에서 Ctrl+F5 로 새로고침합니다.</td>
-            </tr>
-            </tbody>
-        </table>
-        <p class="hint">원장님 문의 전화는 본사 1522-9320 으로 안내합니다. 수강생용 안내는 <a href="<?= base_url('/academy/howto') ?>" target="_blank" rel="noopener">사이트 이용법</a>에 있습니다.</p>
     </section>
 
 </div>
